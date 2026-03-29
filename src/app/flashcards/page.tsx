@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { words } from "@/data/words";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Word } from "@/lib/types";
 import {
   getProgress,
@@ -9,6 +8,7 @@ import {
   updateStats,
   incrementWordsLearned,
 } from "@/lib/storage";
+import { getAllWords } from "@/lib/words-loader";
 
 export default function FlashcardsPage() {
   const [deck, setDeck] = useState<Word[]>([]);
@@ -16,13 +16,14 @@ export default function FlashcardsPage() {
   const [flipped, setFlipped] = useState(false);
   const [filter, setFilter] = useState<"all" | "interview" | "research">("all");
   const [showResult, setShowResult] = useState<"correct" | "incorrect" | null>(null);
+  const allWordsRef = useRef<Word[]>([]);
 
   const buildDeck = useCallback(
     (f: "all" | "interview" | "research") => {
       const progress = getProgress();
       const today = new Date().toISOString().split("T")[0];
 
-      let filtered = words.filter(
+      let filtered = allWordsRef.current.filter(
         (w) => f === "all" || w.category === f || w.category === "both"
       );
 
@@ -52,7 +53,10 @@ export default function FlashcardsPage() {
   );
 
   useEffect(() => {
-    buildDeck(filter);
+    getAllWords().then((words) => {
+      allWordsRef.current = words;
+      buildDeck(filter);
+    });
   }, [filter, buildDeck]);
 
   const currentWord = deck[currentIndex];

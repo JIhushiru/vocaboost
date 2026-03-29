@@ -1,17 +1,20 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { words } from "@/data/words";
+import { Word } from "@/lib/types";
 import { getProgress, getStats } from "@/lib/storage";
 import { WordProgress, UserStats } from "@/lib/types";
+import { getAllWords } from "@/lib/words-loader";
 
 export default function ProgressPage() {
   const [stats, setStats] = useState<UserStats | null>(null);
   const [progress, setProgress] = useState<Record<string, WordProgress>>({});
+  const [words, setWords] = useState<Word[]>([]);
 
   useEffect(() => {
     setStats(getStats());
     setProgress(getProgress());
+    getAllWords().then(setWords);
   }, []);
 
   if (!stats) {

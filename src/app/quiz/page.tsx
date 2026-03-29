@@ -1,13 +1,13 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
-import { words } from "@/data/words";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Word } from "@/lib/types";
 import {
   setWordProgress,
   updateStats,
   incrementQuizCount,
 } from "@/lib/storage";
+import { getAllWords } from "@/lib/words-loader";
 
 interface QuizQuestion {
   word: Word;
@@ -72,9 +72,16 @@ export default function QuizPage() {
   const [finished, setFinished] = useState(false);
   const [started, setStarted] = useState(false);
   const [questionCount, setQuestionCount] = useState(10);
+  const allWordsRef = useRef<Word[]>([]);
+
+  useEffect(() => {
+    getAllWords().then((words) => {
+      allWordsRef.current = words;
+    });
+  }, []);
 
   const startQuiz = useCallback(() => {
-    const pool = words.filter(
+    const pool = allWordsRef.current.filter(
       (w) => filter === "all" || w.category === filter || w.category === "both"
     );
     const q = generateQuestions(pool, questionCount);

@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { words } from "@/data/words";
 import { Word } from "@/lib/types";
 import { getDailyWords, getStats, getProgress } from "@/lib/storage";
+import { getAllWords } from "@/lib/words-loader";
 import WordCard from "@/components/WordCard";
 
 export default function DailyPage() {
@@ -12,14 +12,16 @@ export default function DailyPage() {
   const [filter, setFilter] = useState<"all" | "interview" | "research">("all");
 
   useEffect(() => {
-    const ids = getDailyWords(
-      words.map((w) => w.id),
-      8
-    );
-    const selected = ids
-      .map((id) => words.find((w) => w.id === id))
-      .filter(Boolean) as Word[];
-    setDailyWords(selected);
+    getAllWords().then((allWords) => {
+      const ids = getDailyWords(
+        allWords.map((w) => w.id),
+        8
+      );
+      const selected = ids
+        .map((id) => allWords.find((w) => w.id === id))
+        .filter(Boolean) as Word[];
+      setDailyWords(selected);
+    });
 
     const stats = getStats();
     setStreak(stats.streak);

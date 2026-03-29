@@ -7,6 +7,7 @@ const navItems = [
   { href: "/", label: "Daily", icon: "☀" },
   { href: "/flashcards", label: "Flashcards", icon: "🗂" },
   { href: "/quiz", label: "Quiz", icon: "✎" },
+  { href: "/generate", label: "Generate", icon: "✦" },
   { href: "/progress", label: "Progress", icon: "📊" },
 ];
 
